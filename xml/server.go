@@ -105,7 +105,7 @@ func (c *CodecRequest) WriteResponse(w http.ResponseWriter, response interface{}
 		}
 		xmlstr = fault2XML(fault)
 	} else {
-		xmlstr, _ = rpcResponse2XML(response)
+		xmlstr, _ = RpcResponse2XML(response)
 	}
 
 	w.Header().Set("Content-Type", "text/xml; charset=utf-8")

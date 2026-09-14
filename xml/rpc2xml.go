@@ -22,7 +22,7 @@ func rpcRequest2XML(method string, rpc interface{}) (string, error) {
 	return buffer, err
 }
 
-func rpcResponse2XML(rpc interface{}) (string, error) {
+func RpcResponse2XML(rpc interface{}) (string, error) {
 	buffer := "<methodResponse>"
 	params, err := rpcParams2XML(rpc)
 	buffer += params
@@ -46,7 +46,8 @@ func rpcParams2XML(rpc interface{}) (string, error) {
 
 func rpc2XML(value interface{}) (string, error) {
 	out := "<value>"
-	switch reflect.ValueOf(value).Kind() {
+	reflectValue := reflect.ValueOf(value)
+	switch reflectValue.Kind() {
 	case reflect.Int:
 		out += fmt.Sprintf("<int>%d</int>", value.(int))
 	case reflect.Float64:
@@ -69,8 +70,11 @@ func rpc2XML(value interface{}) (string, error) {
 			out += base642XML(value.([]byte))
 		}
 	case reflect.Ptr:
-		if reflect.ValueOf(value).IsNil() {
+		if reflectValue.IsNil() {
 			out += "<nil/>"
+		} else { // obtain the string for the dereferenced value
+			// note the panic condition of .Interface()
+			return rpc2XML(reflectValue.Elem().Interface())
 		}
 	}
 	out += "</value>"

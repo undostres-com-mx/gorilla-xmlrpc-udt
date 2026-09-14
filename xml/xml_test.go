@@ -14,9 +14,9 @@ import (
 	"github.com/gorilla/rpc"
 )
 
-//////////////////////////////////
+// ////////////////////////////////
 // Service 1
-//////////////////////////////////
+// ////////////////////////////////
 type Service1Request struct {
 	A int
 	B int
@@ -40,9 +40,9 @@ func (t *Service1) Multiply(r *http.Request, req *Service1Request, res *Service1
 	return nil
 }
 
-//////////////////////////////////
+// ////////////////////////////////
 // Service 2
-//////////////////////////////////
+// ////////////////////////////////
 type Service2Request struct {
 	Name      string
 	Age       int
@@ -170,7 +170,7 @@ func TestRPC2XMLConverter(t *testing.T) {
 	}
 
 	res := &Service1Response{42}
-	xml, err = rpcResponse2XML(res)
+	xml, err = RpcResponse2XML(res)
 	if err != nil {
 		t.Error("RPC2XML conversion failed", err)
 	}

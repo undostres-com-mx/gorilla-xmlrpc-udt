@@ -45,7 +45,7 @@ type StructSpecialCharsRpc2Xml struct {
 
 func TestRPC2XMLSpecialChars(t *testing.T) {
 	req := &StructSpecialCharsRpc2Xml{" & \" < > "}
-	xml, err := rpcResponse2XML(req)
+	xml, err := RpcResponse2XML(req)
 	if err != nil {
 		t.Error("RPC2XML conversion failed", err)
 	}
@@ -63,7 +63,7 @@ type StructNilRpc2Xml struct {
 
 func TestRpc2XmlNil(t *testing.T) {
 	req := &StructNilRpc2Xml{nil}
-	xml, err := rpcResponse2XML(req)
+	xml, err := RpcResponse2XML(req)
 	if err != nil {
 		t.Error("RPC2XML conversion failed", err)
 	}
@@ -109,11 +109,27 @@ func TestRPC2XmlTaggedStruct(t *testing.T) {
 			nil,
 		},
 	}
-	xml, err := rpcResponse2XML(req)
+	xml, err := RpcResponse2XML(req)
 	if err != nil {
 		t.Error("RPC2XML conversion failed", err)
 	}
 	expected := "<methodResponse><params><param><value><struct><member><name>other</name><value><string>testing</string></value></member><member><name>Bar</name><value><int>123</int></value></member><member><name>NonEmptyUnnamed</name><value><string>no tag name</string></value></member><member><name>emptiness</name><value><string>tag named</string></value></member></struct></value></param></params></methodResponse>"
+	if xml != expected {
+		t.Error("RPC2XML conversion of a tagged struct failed")
+		t.Error("Expected", expected)
+		t.Error("Got", xml)
+	}
+}
+
+func TestRPC2Xml_whenPointerAttributeIsNotNil_thenTreatAsIfNotPointer(t *testing.T) {
+	number := 1
+	notNilInt := &number
+	req := &StructNilRpc2Xml{Ptr: notNilInt}
+	xml, err := RpcResponse2XML(req)
+	if err != nil {
+		t.Error("RPC2XML conversion failed", err)
+	}
+	expected := "<methodResponse><params><param><value><int>1</int></value></param></params></methodResponse>"
 	if xml != expected {
 		t.Error("RPC2XML conversion of a tagged struct failed")
 		t.Error("Expected", expected)

@@ -105,27 +105,18 @@ func struct2XML(value interface{}) (out string) {
 		field := reflect.ValueOf(value).Field(i)
 		field_type := reflect.TypeOf(value).Field(i)
 		var name string
-		tag := field_type.Tag.Get("xml")
-		// This omitempty implementation is copied from https://github.com/divan/gorilla-xmlrpc/pull/17/changes
-		omit_empty := false
-		if tag != "" {
-			if strings.Contains(tag, "omitempty") {
-				omit_empty = true
-				val := strings.Split(tag, ",")
-				if len(val) == 1 || val[0] == "" {
-					//omit if empty but no field name defined, use struct default
-					name = field_type.Name
-				} else {
-					name = val[0]
-				}
-			} else {
-				name = tag
-			}
-		} else {
+		tagStr := field_type.Tag.Get("xml")
+		tagObj := ParseTag(tagStr)
+		if tagObj.Skip {
+			continue
+		}
+		if len(tagObj.Name) == 0 {
 			name = field_type.Name
+		} else {
+			name = tagObj.Name
 		}
 		field_value, _ := rpc2XML(field.Interface())
-		if omit_empty {
+		if tagObj.Omitempty {
 			//from encoding/xml Marshal():
 			//empty values are false, 0, any nil pointer or interface value, and any array, slice, map, or string of length zero.
 			switch field_value {

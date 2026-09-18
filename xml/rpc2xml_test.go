@@ -90,6 +90,7 @@ type ActualTaggedStructRpc2Xml struct {
 	EmptyStruct     struct{}      `xml:"struck,omitempty"`
 	EmptyNum        int           `xml:"numi,omitempty"`
 	Nilly           *int          `xml:"nowhere,omitempty"`
+	Skip            int           `xml:"-"`
 }
 
 var emptyStruct struct{}
@@ -107,6 +108,7 @@ func TestRPC2XmlTaggedStruct(t *testing.T) {
 			emptyStruct,
 			0,
 			nil,
+			4,
 		},
 	}
 	xml, err := RpcResponse2XML(req)
